@@ -11,11 +11,14 @@
 1. 从当前主分支创建自己的分支，每次聚焦一个问题。
 2. 修改代码时同步更新受影响的使用文档和适当测试。
 3. 不把 `partial`、拒答或失败改写为成功；保持状态与证据边界。
-4. 变更文件后更新 `source_manifest.json` 中对应的发布文件摘要，新增文件也应登记；该清单不包含它自身。
+4. 变更文件后执行 `python scripts/update_source_manifest.py --write` 更新发布摘要。已跟踪和未忽略的新文件都会登记，保留原始快照摘要及来源；清单不包含它自身，不读取忽略的本机输出。
 5. 执行离线检查：
 
 ```powershell
 python scripts\verify_repository.py
+python scripts\update_source_manifest.py
+python -m unittest discover -s tests -v
+python workflow.py demo
 python scripts\check_empty_corpus.py
 ```
 

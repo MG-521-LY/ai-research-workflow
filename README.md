@@ -1,6 +1,7 @@
 # AI Research Workflow｜AI 辅助科研工作流
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Offline checks](https://github.com/MG-521-LY/ai-research-workflow/actions/workflows/verify.yml/badge.svg)](https://github.com/MG-521-LY/ai-research-workflow/actions/workflows/verify.yml)
 
 把**主题检索、合法全文获取、Zotero 入库、论文解析、带出处问答、研究假设与验证方案、会话协作**连接成一条可追踪、可恢复的工作流。
 
@@ -8,7 +9,8 @@
 
 ## 从哪里开始
 
-- 第一次安装：[安装与配置](docs/INSTALLATION.md)
+- 第一次使用，无需密钥：[本地快速开始](docs/LOCAL_QUICKSTART.md)
+- 配置获取、模型与文库：[安装与配置](docs/INSTALLATION.md)
 - 从一批论文跑到研究报告：[完整使用教程](docs/TUTORIAL.md)
 - 理解模块和数据流：[架构与目录](docs/ARCHITECTURE.md)
 - 网络失败、拒答、重复入库、断点续跑：[故障与恢复](docs/TROUBLESHOOTING.md)
@@ -59,10 +61,15 @@ Set-Location ai-research-workflow
 py -3.12 -m venv .venv
 $py = Join-Path (Get-Location) '.venv\Scripts\python.exe'
 & $py -m pip install --upgrade pip
-& $py -m pip install -e .\InstSCI
 & $py -m pip install -r .\requirements.txt
+& $py workflow.py doctor --profile research
+& $py workflow.py demo
 & $py scripts\verify_repository.py
 ```
+
+`demo`用临时合成PDF运行真实解析和索引，网络被拦截，不调用模型或文库。只有需要文献检索与获取时才额外安装 `& $py -m pip install -e .\InstSCI`。Linux命令见[本地快速开始](docs/LOCAL_QUICKSTART.md)。
+
+统一入口还提供 `manifest`（扫描、去重并生成待核题录的分析清单）、`validate`（只读文件校验）和 `status`（查看T005完成状态并核报告字节）。完整参数见 `python workflow.py --help`。
 
 PaperQA 的历史锁定环境见 `deliveries/T003_paperqa_bridge/requirements_locked.txt`，安装前阅读[依赖说明](docs/INSTALLATION.md)。真实模型调用、机构认证和 Zotero 写入均需要自己的配置与授权；首次安装检查不会替你执行这些操作。
 

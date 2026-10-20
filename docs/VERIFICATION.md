@@ -6,11 +6,20 @@
 
 ```powershell
 python scripts\verify_repository.py
+python scripts\update_source_manifest.py
+python -m unittest discover -s tests -v
+python workflow.py doctor --profile research
+python workflow.py demo
+python scripts\check_empty_corpus.py
 ```
 
-检查Python语法、JSON文件解析、必要入口、当前顶层教程链接，以及禁止随包提交的论文/数据库/授权状态/常见密钥模式。它不连接模型、Zotero、DSH或出版商。结果会明确列出实际检查项，不生成虚构科研通过率。
+发布检查核对Python语法、JSON文件解析、必要入口、顶层教程链接、发布清单覆盖/摘要/尺寸，以及禁止随包提交的论文/数据库/授权状态/常见密钥模式。文件范围取自Git已跟踪和未忽略的新文件；忽略的本机outputs、论文和凭据不会被读取，强制加入Git的文件仍受检查。需要Git克隆目录。
 
-GitHub Actions运行同一静态检查，配合临时空语料门禁检查。CI不是完整真实文献、授权、模型、实验或科学结论验收。
+自包含回归不依赖原机研究资料。临时生成PDF，覆盖：去重与未知题录、中文/空格路径、相对路径、损坏/缺失/改写文件、重复ID、显式拒收状态、OCR警告、不覆盖已有清单、无依赖诊断、不回显密钥、部分失败状态保留、完成报告字节篡改，以及真实T005解析/索引。子进程拦截网络；不写真实Zotero、不投递DSH。
+
+`demo`只运行真实T005第一阶段，其他阶段保持pending，不生成假模型答案。空语料测试还核对明确的“清单条目为空”原因，避免依赖缺失等其他异常被误算为门禁有效。
+
+GitHub Actions使用Python 3.12，在Windows与Linux运行同一组检查。CI不是完整真实文献、机构授权、模型、实验或科学结论验收。macOS和其他Python版本未列为本次验证平台。
 
 ## 需要单独环境的数据回归
 

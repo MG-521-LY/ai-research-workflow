@@ -2,7 +2,7 @@
 
 ## 1. 环境要求
 
-参考环境是 Windows PowerShell 与 Python 3.12。InstSCI 自身声明 Python 3.10 以上；整套组合是否支持其他系统或 Python 版本需按实际依赖安装验证。DSH 本机 Controller 桥接使用 Windows 进程和端口检测，不能视为跨平台通用服务。
+参考环境是 Windows PowerShell 与 Python 3.12。本地入口和离线回归同时纳入Windows/Linux CI；不据此宣称机构认证、真实模型、文库写入或DSH跨平台验证。InstSCI自身声明Python 3.10以上；其他Python版本需按实际依赖安装验证。DSH本机Controller桥接使用Windows进程和端口检测。
 
 按用途准备：
 
@@ -25,12 +25,21 @@ $repo = (Get-Location).Path
 py -3.12 -m venv .venv
 $py = Join-Path $repo '.venv\Scripts\python.exe'
 & $py -m pip install --upgrade pip
-& $py -m pip install -e .\InstSCI
 & $py -m pip install -r .\requirements.txt
+& $py workflow.py doctor --profile research
+& $py workflow.py demo
 & $py scripts\verify_repository.py
 ```
 
-这些命令安装代码与依赖，不登录机构、不调用模型、不上传论文。浏览器运行时若需要额外下载，按 InstSCI 的安装说明操作；不要把浏览器缓存提交到仓库。
+基础依赖包含实际解析/索引使用的PyMuPDF、pypdfium2与Tantivy；不必为本地文件处理先安装完整PaperQA锁定环境。`doctor`只检查当前解释器中的包是否存在；`demo`使用临时合成PDF验证真实T005第一阶段，拦截网络，后续推理阶段保持pending。Linux命令及PDF清单教程见[本地快速开始](LOCAL_QUICKSTART.md)。
+
+需要主题检索与机构全文获取时，另外执行：
+
+```powershell
+& $py -m pip install -e .\InstSCI
+```
+
+这些命令安装代码与依赖，不登录机构、不调用模型、不上传论文。浏览器运行时若需要额外下载，按InstSCI的安装说明操作；不要把浏览器缓存提交到仓库。
 
 ## 3. PaperQA 依赖
 
@@ -95,6 +104,8 @@ deliveries/T006_dsh_mcp_control/state/managed_sessions.json
 
 ```powershell
 & $py scripts\verify_repository.py
+& $py -m unittest discover -s tests -v
+& $py workflow.py demo
 & $py deliveries\T005_research_pipeline\research_runner.py --help
 & $py deliveries\T004_download_zotero_bridge\pipeline_runner.py --help
 ```

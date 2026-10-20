@@ -22,7 +22,18 @@ $question = '请在此写出具体研究问题、比较对象、资源条件与�
 
 先核实每份 PDF 的题名、作者、年份、版本与真实内容。文件名看起来正确不代表 PDF 属于同一篇论文。
 
-下面只扫描已有文件，生成待审核清单，不执行真实导入：
+只做本地分析时，可直接生成T005分析清单，无需先入Zotero：
+
+```powershell
+$papers = 'C:\research-data\my-study\papers' # 改为自己的目录
+& $py workflow.py manifest --input-dir $papers `
+  --output (Join-Path $work 'analysis_manifest.json') --question $question
+& $py workflow.py validate --manifest (Join-Path $work 'analysis_manifest.json')
+```
+
+实际字节相同的PDF会去重；题名、作者和年份不会从文件名编造，需人工补核。已有清单不会被覆盖。详细边界与Linux命令见[本地快速开始](LOCAL_QUICKSTART.md)。这一路线跳过下面的Zotero导入与导出步骤，直接进入第4节。
+
+**需要Zotero入库时**，使用T004自己的扫描入口生成另一份导入清单，先不执行真实导入：
 
 ```powershell
 $papers = 'C:\research-data\my-study\papers' # 改为自己的目录
@@ -137,7 +148,10 @@ $flow = 'deliveries\T004_download_zotero_bridge\instsci_default_workflow\workflo
 
 ```powershell
 Get-Content -Raw -Encoding UTF8 (Join-Path $work 'research\run_result.json')
+& $py workflow.py status --output (Join-Path $work 'research')
 ```
+
+`status`只读检查终态、九阶段记录与登记报告的实际SHA256；未完成/部分失败时返回1并显示真实状态，不会自动重跑或修写台账。
 
 1. 先查 `execution_status`、各阶段状态、语料冲突与缺失；
 2. 再看 `RESEARCH_SYNTHESIS_REPORT.md`，区分原文事实、推断和待检验假说；

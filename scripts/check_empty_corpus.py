@@ -11,7 +11,9 @@ with tempfile.TemporaryDirectory(prefix='research_workflow_gate_') as td:
  p=subprocess.run([sys.executable,'-B','-c',wrapper],cwd=ROOT,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=60)
  state=d/'run/run_result.json'
  result=json.loads(state.read_text(encoding='utf-8')) if state.exists() else {}
- ok=p.returncode==1 and bool(result) and result.get('execution_status')!='COMPLETED'
+ # A missing parser/import must not masquerade as a successful empty-corpus test.
+ expected_reason=any('清单文件内容条目为空' in str(e) for e in result.get('errors_or_unresolved_claims',[]))
+ ok=p.returncode==1 and result.get('execution_status')=='FAILED' and expected_reason
  print(json.dumps({'empty_corpus_rejected':ok,'exit_code':p.returncode,'state_written':state.exists(),'execution_status':result.get('execution_status'),'network':'blocked'},ensure_ascii=False))
  if not ok:
   print(p.stdout[-1800:]);print(p.stderr[-1000:]);sys.exit(1)
