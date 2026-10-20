@@ -1,8 +1,10 @@
 # AI Research Workflow｜AI 辅助科研工作流
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
 把**主题检索、合法全文获取、Zotero 入库、论文解析、带出处问答、研究假设与验证方案、会话协作**连接成一条可追踪、可恢复的工作流。
 
-本仓库整理现有工作流的源码、配置模板、技能、测试和使用说明。它是研究工具链的源码快照，不包含个人论文库、账户凭据、浏览器登录状态或研究运行产物。原工作目录继续保留，独立的发布目录不会干扰正在进行的研究会话。
+这是一个 **MIT 许可的开源科研工作流**，包含源码、配置模板、技能、测试和使用说明。它是研究工具链的源码快照，不包含个人论文库、账户凭据、浏览器登录状态或研究运行产物。原工作目录继续保留，独立的发布目录不会干扰正在进行的研究会话。
 
 ## 从哪里开始
 
@@ -75,4 +77,6 @@ PaperQA 的历史锁定环境见 `deliveries/T003_paperqa_bridge/requirements_lo
 
 ## 来源与许可
 
-InstSCI 与主题库来源、基准提交和导出清单见 [source_manifest.json](source_manifest.json)。各组件保留自己的许可与署名；本仓库没有把第三方代码重新声明为统一许可证，详见 [NOTICE.md](NOTICE.md)。
+本项目的集成代码和文档采用 [MIT License](LICENSE)。InstSCI、主题库与复用脚本保留各自的 MIT 许可和原作者署名，详见 [NOTICE.md](NOTICE.md)。来源、基准提交和导出清单见 [source_manifest.json](source_manifest.json)。
+
+欢迎通过 Issue 和 Pull Request 反馈问题或贡献改进，提交前请阅读 [贡献指南](CONTRIBUTING.md)，不要附带密钥、登录状态或无权再分发的论文。

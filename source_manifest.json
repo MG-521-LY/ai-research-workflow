@@ -37,6 +37,11 @@
       "bytes": 513
     },
     {
+      "path": "CONTRIBUTING.md",
+      "sha256": "10a8ae1e4c1703aee8dc29f09bb8ba7b8f7926261b9c536ae615e6c303e28059",
+      "bytes": 1433
+    },
+    {
       "path": "InstSCI-topic-library/.gitattributes",
       "sha256": "d60f352d0db1404c70afb4bb8b2ca3fd1c610572aa40720e8a0b7baa7885418c",
       "bytes": 19,
@@ -841,14 +846,19 @@
       "original_snapshot_sha256": "c80e01913929188e3f254b67c53dbfe6dffc454a06d81b209da2f4b8c2fff173"
     },
     {
+      "path": "LICENSE",
+      "sha256": "6a54d69cac81a616f93b0a2cfccaeeace1651c09e7e99683b7f35b0c423e4727",
+      "bytes": 1104
+    },
+    {
       "path": "NOTICE.md",
-      "sha256": "effbf33dd9884b5bdc2ebd737ba1e51e162229597fcdc4390b78d1751bda4ed6",
-      "bytes": 934
+      "sha256": "bbbccab62923e1833e44f6fc23ac2ecd2c06c56e717bef5adb8b2e12899957a6",
+      "bytes": 1340
     },
     {
       "path": "README.md",
-      "sha256": "2c1d551c9f16169416835529069b033943a4a3d9c96dc19fac0e87d6ad4f6a16",
-      "bytes": 4646
+      "sha256": "b0da1a7039b1cd233e94a91d2304a038a1e46e934e7e969e4b8b945afc7240c2",
+      "bytes": 4954
     },
     {
       "path": "SECURITY.md",
@@ -1090,6 +1100,11 @@
       "original_snapshot_sha256": "1873becd5b1c3ad1b9a499d53b4cfb4349ed3cb6cd0b2474bc60328e2311c51e"
     },
     {
+      "path": "deliveries/T004_download_zotero_bridge/vendor/LICENSE-cnki-topic-library.txt",
+      "sha256": "23737add3988e7aaa02ee9faa5f6335c39dcba1e65bc3038be4ac3d3d9906305",
+      "bytes": 1066
+    },
+    {
       "path": "deliveries/T004_download_zotero_bridge/vendor/ingest_runner_upstream.py",
       "sha256": "2ec661d9390aaed5d97f449c9c7f815efe139acbeac5a1b341690b7ca05275e6",
       "bytes": 29557,
@@ -1260,5 +1275,6 @@
     "Removed dated DeepSeek successor creation helpers from reusable export only",
     "Exported text normalized to UTF-8/LF for reproducible Git file hashes; runtime state and data remain excluded"
   ],
-  "file_count_excluding_manifest": 209
+  "file_count_excluding_manifest": 212,
+  "license": "MIT; original component MIT notices retained"
 }
