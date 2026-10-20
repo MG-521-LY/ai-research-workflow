@@ -4,8 +4,10 @@ import subprocess
 
 
 def public_files(root):
-    """Include tracked files (even force-added secrets) and unignored new files."""
-    root = Path(root).resolve()
+    """Include Git files, preserving the caller's root spelling in returned paths."""
+    # resolve() expands Windows 8.3 aliases (RUNNER~1 -> runneradmin), which
+    # breaks relative_to(caller_root). Git can use the caller's absolute alias.
+    root = Path(root).absolute()
     try:
         result = subprocess.run(
             ["git", "-C", str(root), "ls-files", "--cached", "--others", "--exclude-standard", "-z"],

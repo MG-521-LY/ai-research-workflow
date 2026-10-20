@@ -1280,8 +1280,9 @@
     },
     {
       "path": "scripts/release_files.py",
-      "sha256": "f7bdd51c5eb17d5799567c87739468636481f393ee3074a54979b779c3859d0f",
-      "bytes": 757
+      "sha256": "30d5a3b91ef1faf8e9d510f3419165d018f0bcdfcdd234df0e040541f4d56566",
+      "bytes": 917,
+      "original_snapshot_sha256": "f7bdd51c5eb17d5799567c87739468636481f393ee3074a54979b779c3859d0f"
     },
     {
       "path": "scripts/update_source_manifest.py",
@@ -1318,5 +1319,5 @@
   ],
   "file_count_excluding_manifest": 218,
   "license": "MIT; original component MIT notices retained",
-  "last_updated_at": "2026-10-20T10:58:05.772770+00:00"
+  "last_updated_at": "2026-10-20T11:01:26.250938+00:00"
 }
