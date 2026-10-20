@@ -1,0 +1,8 @@
+# Core workflow dependencies. Install InstSCI separately with pip install -e ./InstSCI.
+PyMuPDF>=1.23.0
+PyYAML>=6.0
+requests>=2.31
+jsonschema>=4.0
+mcp==1.30.0
+# Native PaperQA is an optional additional installation; see docs/INSTALLATION.md.
+

@@ -1,0 +1,53 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.cache/
+.venv/
+venv/
+.env
+*.env
+
+# Build artifacts
+build/
+dist/
+*.whl
+*.zip
+*.tar.gz
+
+# InstSci runtime artifacts
+runs/
+downloads/
+.instsci/
+instsci/_browsers/
+*.pdf
+*.log
+*.db
+*.sqlite
+*.sqlite3
+cookies.json
+carsi_cookies/
+chrome-profile/
+browser-profile/
+cnki-profile/
+worker-profiles/
+*.har
+storage_state*.json
+*.pem
+*.key
+*.p12
+*.pfx
+private-evidence/
+private_evidence/
+*.private.json
+
+# Local, non-release prototypes
+prototypes/
+
+# Local diagnostics
+*_doctor_full_report.json
+public_audit_report.json
+zotero_sync_report.json

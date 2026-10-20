@@ -1,0 +1,15 @@
+{
+  "upstream_sources": {
+    "cnki_topic_library_jobs": {
+      "source_path": "C:/Users/lamost/.codex/skills/cnki-topic-library/scripts/library_jobs.py",
+      "sha256": "07d65b8519c3f4f8ba95da0c783a3dbac18c7dd39e41923c876671db3eaca0f6",
+      "description": "Original CNKI topic library offline state, screening and verification script"
+    },
+    "t001_ingest_runner": {
+      "source_path": "E:/AI/AI_reserch/deliveries/T001_zotero_ingest/ingest_runner.py",
+      "sha256": "2ec661d9390aaed5d97f449c9c7f815efe139acbeac5a1b341690b7ca05275e6",
+      "description": "T001 Zotero ingest runner with strict parent-child attachment verification and exit codes"
+    }
+  },
+  "copied_at": "2026-10-15T13:41:32.849Z"
+}

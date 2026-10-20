@@ -1,0 +1,18 @@
+{
+  "Example Region": {
+    "Example EZproxy University": {
+      "type": "ezproxy",
+      "host": "https://ezproxy.example.edu/login"
+    },
+    "Example WebVPN University": {
+      "type": "webvpn",
+      "host": "https://webvpn.example.edu",
+      "notes": "Public placeholder only. Configure your own institution locally before using WebVPN URL conversion."
+    },
+    "Example Connector University": {
+      "type": "easyconnect",
+      "host": "https://connector.example.edu",
+      "gateway": "connector.example.edu"
+    }
+  }
+}

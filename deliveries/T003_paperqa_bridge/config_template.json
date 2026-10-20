@@ -1,0 +1,46 @@
+{
+  "version": "1.1.0",
+  "task_id": "T003-PAPERQA-BRIDGE",
+  "runtime": {
+    "python_interpreter": ".venv/Scripts/python.exe",
+    "allow_network_requests": false,
+    "offline_mode_enforced": true,
+    "litellm_local_model_cost_map": true,
+    "hf_hub_offline": true
+  },
+  "models": {
+    "llm": {
+      "provider": "unconfigured_in_python_env",
+      "model_name": "none_in_phase_a",
+      "api_base": null,
+      "api_key_env_var": "DEEPSEEK_API_KEY",
+      "temperature": 0,
+      "phase_status": "待接通"
+    },
+    "summary_llm": {
+      "provider": "unconfigured_in_python_env",
+      "model_name": "none_in_phase_a",
+      "api_base": null,
+      "api_key_env_var": "DEEPSEEK_API_KEY",
+      "phase_status": "待接通"
+    },
+    "embedding": {
+      "sparse_provider": "paperqa_native_and_tantivy",
+      "sparse_model": "SparseEmbeddingModel_and_BM25",
+      "remote_dense_model": null,
+      "phase_status": "本地稀疏就绪 / 远程Dense未实测"
+    }
+  },
+  "retrieval": {
+    "index_type": "sparse_tantivy_and_paperqa_docs",
+    "k_candidates": 3,
+    "chunking_strategy": "physical_page_with_paragraphs",
+    "status": "active"
+  },
+  "paths": {
+    "input_manifest": "input_manifest.json",
+    "papers_input_dir": "inputs/papers",
+    "chunks_mapping_file": "storage/chunks/chunks_mapping.json",
+    "sparse_index_dir": "storage/sparse_index"
+  }
+}

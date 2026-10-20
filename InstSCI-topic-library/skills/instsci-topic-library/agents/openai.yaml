@@ -1,0 +1,4 @@
+interface:
+  display_name: "主题文献助手 · InstSci"
+  short_description: "把研究需求变成多来源候选、摘要筛选和按目标篇数核验的文献库"
+  default_prompt: "使用 $instsci-topic-library 根据我的研究主题检索中英文文献，阅读摘要筛选并下载指定篇数。"

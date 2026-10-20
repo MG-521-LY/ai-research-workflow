@@ -1,0 +1,105 @@
+"""Configuration management for InstSci."""
+
+import json
+import logging
+from dataclasses import asdict, dataclass
+from pathlib import Path
+
+logger = logging.getLogger(__name__)
+
+DEFAULT_BASE_DIR = Path.home() / ".instsci"
+
+
+@dataclass
+class Config:
+    """InstSci configuration."""
+
+    school: str = ""  # School name (use 'instsci schools' to list, or configure via MCP)
+    webvpn_base_url: str = ""  # Legacy storage name for the campus access URL
+    ezproxy_base_url: str = ""  # EZproxy URL prefix (e.g. http://eproxy.lib.hku.hk/login?url=)
+    proxy_url: str = ""  # Legacy storage name for local SOCKS5 connector URL.
+    email: str = ""  # Set via 'instsci config-cmd --email your@email.com'
+    elsevier_api_key: str = ""  # Elsevier Developer Portal API key
+    elsevier_inst_token: str = ""  # Optional Elsevier institutional token
+    output_dir: str = ""
+    cache_dir: str = ""
+    cookie_path: str = ""
+    chrome_profile_dir: str = ""
+    cnki_profile_dir: str = ""  # Dedicated persistent CNKI browser profile
+    wanfang_profile_dir: str = ""  # Dedicated persistent Wanfang browser profile
+    private_evidence_dir: str = ""  # External index for private browser evidence references
+    carsi_enabled: bool = False  # Enable CARSI/Shibboleth federated auth
+    carsi_idp_name: str = ""  # University name for CARSI WAYF (e.g. "Example University")
+    institution_name_zh: str = ""  # User's subscription institution name in Chinese/local form
+    institution_name_en: str = ""  # User's subscription institution name in English form
+    institution_idp_host_suffixes: tuple[str, ...] = ()  # Institution IdP hosts treated as user-login pages
+    institution_session_domains: tuple[str, ...] = ()  # Extra session domains for `session-doctor`
+    carsi_cookie_dir: str = ""  # Per-publisher CARSI cookies
+    request_delay_min: float = 2.0
+    request_delay_max: float = 5.0
+    chinese_download_warning_threshold: int | None = 100
+    chinese_download_combined_daily_limit: int | None = None
+    cnki_daily_download_limit: int | None = None
+    wanfang_daily_download_limit: int | None = None
+
+    def __post_init__(self):
+        base = DEFAULT_BASE_DIR
+        if not self.output_dir:
+            self.output_dir = str(base / "papers")
+        if not self.cache_dir:
+            self.cache_dir = str(base / "cache")
+        if not self.cookie_path:
+            self.cookie_path = str(base / "cookies.json")
+        if not self.chrome_profile_dir:
+            self.chrome_profile_dir = str(base / "chrome-profile")
+        if not self.cnki_profile_dir:
+            self.cnki_profile_dir = str(base / "cnki-profile")
+        if not self.wanfang_profile_dir:
+            self.wanfang_profile_dir = str(base / "wanfang-profile")
+        if not self.private_evidence_dir:
+            self.private_evidence_dir = str(base / "private-evidence")
+        if not self.carsi_cookie_dir:
+            self.carsi_cookie_dir = str(base / "carsi_cookies")
+        # Auto-resolve campus/library access URL from school if not set.
+        if self.school and not self.webvpn_base_url and not self.ezproxy_base_url:
+            try:
+                from .schools import get_school
+                entry = get_school(self.school)
+                if entry.school_type == "ezproxy":
+                    self.ezproxy_base_url = entry.host
+                else:
+                    self.webvpn_base_url = entry.host
+            except ValueError:
+                pass  # School not found; user must set manually
+
+    def ensure_dirs(self):
+        """Create all necessary directories."""
+        for d in [
+            self.output_dir,
+            self.cache_dir,
+            self.chrome_profile_dir,
+            self.cnki_profile_dir,
+            self.wanfang_profile_dir,
+            self.carsi_cookie_dir,
+        ]:
+            Path(d).mkdir(parents=True, exist_ok=True)
+        Path(self.cookie_path).parent.mkdir(parents=True, exist_ok=True)
+
+    def save(self, path: Path | None = None):
+        """Save config to JSON file."""
+        path = path or (DEFAULT_BASE_DIR / "config.json")
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(asdict(self), indent=2), encoding="utf-8")
+
+    @classmethod
+    def load(cls, path: Path | None = None) -> "Config":
+        """Load config from JSON file, falling back to defaults."""
+        if path is None:
+            path = DEFAULT_BASE_DIR / "config.json"
+        if path.exists():
+            try:
+                data = json.loads(path.read_text(encoding="utf-8"))
+                return cls(**{k: v for k, v in data.items() if k in cls.__dataclass_fields__})
+            except (json.JSONDecodeError, TypeError) as e:
+                logger.warning("Failed to load config from %s: %s. Using defaults.", path, e)
+        return cls()

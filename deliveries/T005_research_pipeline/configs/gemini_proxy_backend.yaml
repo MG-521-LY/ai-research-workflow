@@ -1,0 +1,9 @@
+# Gemini 本地反代后端配置 (OpenAI 协议兼容)
+provider: gemini_proxy
+api_base: http://127.0.0.1:8317/v1
+model: gemini-3.8-flash-high
+api_key_ref: ANTIGRAVITY_LOCAL_API_KEY
+temperature: 0.3
+max_tokens: 4096
+timeout: 60
+embedding: sparse

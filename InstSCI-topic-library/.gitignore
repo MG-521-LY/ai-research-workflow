@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+runtime/
+.venv/
+.env
+.env.*
+*.pdf
+*.caj
+.topic-install.json
