@@ -21,6 +21,8 @@ class Paper:
     source: str = ""  # "institutional" | "open_access" | "arxiv"
     pdf_path: str = ""
     url: str = ""
+    zotero_item_key: str = ""
+    zotero_attachment_key: str = ""
 
     def to_dict(self) -> dict[str, Any]:
         """Serialize to a JSON-compatible dict."""

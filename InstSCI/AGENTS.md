@@ -1,5 +1,15 @@
 # InstSci Agent Rules
 
+## Acquisition priority
+
+For all sources, use the actual Zotero Connector first after locating an article
+page. `instsci acquire` is the source-independent workflow entry; topic acquisition
+uses it by default. Existing low-level download commands remain explicit fallback
+implementations. Reuse verified parent+PDF items; carry metadata-only parent keys
+into attachment-only fallback. Do not emulate browser Connector saves with HTTP
+POSTs. Pending/uncertain saves pause duplicate writes. See the parent workflow's
+`docs/CONNECTOR_FIRST.md`; identity and visible-browser rules below still apply.
+
 These rules define the project-level behavior expected from AI agents working in this repository.
 
 ## Agent Workflow

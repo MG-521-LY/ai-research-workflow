@@ -80,13 +80,13 @@ def identify_pdf(path: Path, records: list[dict]) -> dict | None:
     # No-abstract papers: a conservative bounded title/signature area.
     front = "\n".join(front.splitlines()[:35])[:5000]
     normalized_front = normalize(front)
-    matches = [r for r in records if normalize(r["title"]) in normalized_front]
+    matches = [r for r in records if normalize(r["title"]) and normalize(r["title"]) in normalized_front]
     if len(matches) != 1:
         return None
     candidate = matches[0]
     # If a different DOI is printed before the abstract, do not accept by title.
     printed = {x.rstrip(".,;)").lower() for x in re.findall(r"10\.\d{4,9}/[^\s<>]+", front)}
-    if printed and candidate["doi"] not in printed:
+    if printed and candidate["doi"] and candidate["doi"] not in printed:
         return None
     return candidate
 
@@ -119,6 +119,8 @@ def prepare_state(output: Path, spec: dict, records: list[dict], resume: bool) -
     path = output / "library_state.json"
     if resume:
         state = json.loads(path.read_text(encoding="utf-8"))
+        if state.get("connector_save_unresolved"):
+            raise ValueError("A Connector save is unresolved; inspect Zotero before resuming to avoid duplicates")
         if state["spec"] != spec or state["records"] != records:
             raise ValueError("Resume inputs differ from the original library/institution/records")
         seen = set()
@@ -180,6 +182,10 @@ def receive_pdf(path: Path, output: Path, state: dict, evidence: str,
         "route_chain_verified": False,
         "note": "PDF identity and native capture verified. Library-to-database navigation "
                 "must be visually reviewed; no inference of subscription coverage or method read."})
+    prior = state.get("connector_attempts", {}).get(matched["doi"], {})
+    if prior.get("zotero_item_key"):
+        state["downloads"][-1].update(zotero_item_key=prior["zotero_item_key"],
+                                      zotero_status="existing_parent_attachment_pending")
     checkpoint(output, state)
     return True
 
@@ -205,10 +211,12 @@ def run_library(spec: dict, records: list[dict], output: Path, *, resume: bool =
         from .config import Config
         from .publisher_batch import PublisherBatchDownloader
         profile_key = hashlib.sha256(json.dumps(spec, sort_keys=True).encode()).hexdigest()[:20]
-        # Never load/export a global config containing credentials. Reuse only a
-        # dedicated institution profile in the user's private home directory.
+        # Reuse a dedicated institution profile; never export cookies or read
+        # internal authentication databases. Normal user configuration is local.
         profile = Path.home() / ".instsci" / "library-profiles" / profile_key
-        broker = PublisherBatchDownloader(Config(chrome_profile_dir=str(profile)))
+        browser_cfg = Config.load()
+        browser_cfg.chrome_profile_dir = str(profile)
+        broker = PublisherBatchDownloader(browser_cfg)
         state["status"] = "browser_starting"
         checkpoint(output, state)
         try:
@@ -244,6 +252,15 @@ def run_library(spec: dict, records: list[dict], output: Path, *, resume: bool =
             checkpoint(output, state)
             return state
         checkpoint(output, state)
+        state.setdefault("connector_attempts", {})
+        from .connector_first import try_connector, page_matches, extension_directory, save_receipt
+        from .config import Config
+        connector_cfg = Config.load()
+        if not extension_directory(connector_cfg.zotero_connector_extension) or os.environ.get("INSTSCI_CONNECTOR_FALLBACK") == "1":
+            for record in records:
+                state["connector_attempts"].setdefault(record["doi"], {
+                    "status": "connector_unavailable" if not extension_directory(connector_cfg.zotero_connector_extension) else "already_attempted_before_fallback",
+                    "fallback_allowed": True})
         print("请在可见浏览器中从本校图书馆进入数据库，按题名/DOI定位并下载下列 PDF。", flush=True)
         print("学校登录/验证码由您手动完成；已下载项不会重复计入。", flush=True)
         for record in records:
@@ -254,6 +271,32 @@ def run_library(spec: dict, records: list[dict], output: Path, *, resume: bool =
             pages = [p for p in context.pages if not p.is_closed()]
             if not pages:
                 state["status"] = "browser_closed_incomplete"
+                break
+            for record in records:
+                if record["doi"] in state["connector_attempts"] or record["doi"] in {d["doi"] for d in state["downloads"]}:
+                    continue
+                article = next((p for p in pages if page_matches(p, record)), None)
+                if article is None:
+                    continue
+                state["connector_save_unresolved"] = record["doi"]
+                checkpoint(output, state)
+                from .acquisition import _quota_hook
+                host = urlsplit(article.url).hostname or ""
+                portal = "cnki" if "cnki" in host else ("wanfang" if "wanfang" in host else "library")
+                item_dir = output / "connector_first" / hashlib.sha256(record["doi"].encode()).hexdigest()[:20]
+                outcome = try_connector(record, item_dir, config=connector_cfg, context=context, page=article,
+                                        before_save=_quota_hook(record, connector_cfg, portal))
+                save_receipt(item_dir, record, outcome)
+                state["connector_attempts"][record["doi"]] = outcome
+                if outcome["status"] == "verified_pdf":
+                    state["downloads"].append(outcome["row"])
+                    state.pop("connector_save_unresolved", None)
+                elif outcome.get("fallback_allowed"):
+                    state.pop("connector_save_unresolved", None)
+                else:
+                    state["status"] = outcome["status"]
+                checkpoint(output, state)
+            if state.get("connector_save_unresolved"):
                 break
             try:
                 pages[0].wait_for_timeout(250)

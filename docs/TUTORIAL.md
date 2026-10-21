@@ -47,6 +47,8 @@ $papers = 'C:\research-data\my-study\papers' # 改为自己的目录
 
 ### 路线 B：从主题获取必要全文
 
+各来源默认先使用真实 Zotero Connector 保存题录与 PDF，并读回核验。插件不可用/失败或只有题录时，才继续原下载路径；已有父子项复用，避免重复建条目。先按[插件优先配置](CONNECTOR_FIRST.md)准备桌面程序与官方扩展目录。
+
 使用默认 InstSCI 主题工作流，首次仅演练，不提交 Zotero：
 
 ```powershell
@@ -60,7 +62,7 @@ $flow = 'deliveries\T004_download_zotero_bridge\instsci_default_workflow\workflo
   --no-commit
 ```
 
-`--no-commit` 不代表不联网：主题检索、获取仍可能发生；它用于避免真实文库提交。检索后可能停在 `awaiting_agent_review`，宿主需要根据摘要和主题填写评审输入，而不是自动把搜索结果全部下载。具体协议见[主题库说明](../InstSCI-topic-library/README.md)。
+`--no-commit` 不代表不联网：主题检索、获取仍可能发生；它会禁用获取阶段的插件新保存，并避免后续真实文库提交；已有文库全文仍可只读复用。检索后可能停在 `awaiting_agent_review`，宿主需要根据摘要和主题填写评审输入，而不是自动把搜索结果全部下载。具体协议见[主题库说明](../InstSCI-topic-library/README.md)。
 
 遇到学校登录、验证码或访问限制，在可见浏览器中按自己的真实权限操作。默认目标数量不等于已取得数量；只把实际合法取得、唯一且可解析的全文计入。题录、摘要、未获回执和精读方法页分开记录。
 

@@ -21,7 +21,7 @@ import _screening as screening
 
 SCHEMA = "instsci.topic.v1"
 BLOCKERS = {"auth_required", "human_verification_required", "waf_blocked", "daily_limit_reached", "quota_state_error"}
-EVIDENCE = {"oa_direct", "publisher_open_pdf", "browser_verified"}
+EVIDENCE = {"oa_direct", "publisher_open_pdf", "browser_verified", "local_verified_reuse"}
 
 
 def normalize_doi(value):
@@ -344,6 +344,23 @@ def plan_batch(data, root, limit=1, requested_route="auto", institution=""):
              "manifest": str(manifest), "argv": argv, "created_at": screening.now(),
              "input_file": str(input_file), "input_sha256": hashlib.sha256(input_file.read_bytes()).hexdigest(),
              "identities": {p["id"]: acquisition_identity(p, route) for p in chosen}}
+    # Every source uses the same real-extension-first gate. The old source
+    # command is now an explicit fallback inside instsci acquire.
+    connector_input = input_dir / "connector_requests.json"
+    screening.write_json(connector_input, [
+        {"record_id": p["id"], "doi": p.get("doi", ""), "title": p["title"],
+         "url": portal_url(p, route) if route in {"cnki", "wanfang"} else p.get("url", ""),
+         "portal": route if route in {"cnki", "wanfang"} else p.get("provenance", {}).get("portal", ""),
+         "zotero_item_key": p.get("provenance", {}).get("zotero_item_key", ""),
+         "first_author": p.get("provenance", {}).get("first_author", "")} for p in chosen])
+    batch["argv"] = [sys.executable, "-m", "instsci.cli", "acquire", str(connector_input),
+                     "--output", str(run_dir), "--fallback", route]
+    if institution:
+        batch["argv"] += ["--institution", institution]
+    batch["manifest"] = str(run_dir / "complete" / "manifest.json")
+    batch["input_file"] = str(connector_input)
+    batch["input_sha256"] = hashlib.sha256(connector_input.read_bytes()).hexdigest()
+    batch["acquisition_strategy"] = "connector_first"
     data["batches"].append(batch)
     data["retry_ids"] = [i for i in data["retry_ids"] if i not in batch["ids"]]
     screening.write_json(input_dir / "batch.json", batch)

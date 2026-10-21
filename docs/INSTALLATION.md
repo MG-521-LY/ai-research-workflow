@@ -73,6 +73,8 @@ Copy-Item .\deliveries\T005_research_pipeline\configs\deepseek_backend.yaml .\co
 
 ## 5. Zotero 配置
 
+所有来源的默认获取策略是[实际 Connector 优先](CONNECTOR_FIRST.md)。Zotero 桌面程序和官方浏览器扩展须单独准备；CloakBrowser 不会自动继承普通 Chrome 的扩展或登录状态。插件不可用会如实记录并回退，而非声称已经下载导入。
+
 如果选择“本校图书馆官网→数据库”获取方式，先安装 `InstSCI` 并按[学校图书馆路线](LIBRARY_PORTAL.md)填写自己学校的官方地址。配置机构名/网址不是自动认证；登录和验证码由本人在可见浏览器中完成。
 
 先正常启动 Zotero，核实本机端口、文库路径及存储目录。可在当前 PowerShell 中设置非秘密路径：

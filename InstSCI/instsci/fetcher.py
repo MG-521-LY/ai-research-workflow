@@ -179,6 +179,10 @@ class PaperFetcher:
             else:
                 _record_attempt("cache", "miss", reason="not_found")
 
+        from .connector_first import fetcher_connector
+        connector_paper = fetcher_connector(self, identifier)
+        if connector_paper is not None:
+            return connector_paper
         paper = Paper(doi=doi or "", url=url or "")
 
         # Step 1: Try Open Access sources first (if we have a DOI)
@@ -296,6 +300,11 @@ class PaperFetcher:
                     )
                 _record_attempt("cache", "miss", reason="no_oa_pdf")
 
+            from .connector_first import fetcher_connector
+            connector_paper = fetcher_connector(self, identifier)
+            if connector_paper is not None:
+                return FetchResult(status="success", quality="full_text", paper=connector_paper,
+                                   reason="zotero_connector_verified", attempts=attempts)
             if doi:
                 oa_paper = self._try_open_access(doi)
                 _record_paper_attempt("open_access", oa_paper)

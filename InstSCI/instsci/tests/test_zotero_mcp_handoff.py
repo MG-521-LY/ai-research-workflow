@@ -12,6 +12,7 @@ from instsci.zotero_mcp import (
     load_manifest_rows,
     resolve_manifest_path,
     write_zotero_mcp_handoff,
+    PyzoteroSyncBackend,
 )
 
 
@@ -58,6 +59,34 @@ class FakeZoteroBackend:
 
 
 class ZoteroMcpHandoffTests(unittest.TestCase):
+    def test_connector_parent_is_reused_even_when_doi_exists(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            manifest=Path(tmp)/"manifest.json"
+            row={"doi":"10.1234/fixture","status":"success","file_status":"success",
+                 "zotero_item_key":"PARENT01"}
+            manifest.write_text(json.dumps([row]),encoding="utf-8")
+            payload=build_zotero_mcp_handoff(manifest)
+            self.assertEqual(payload["actions"][0]["kind"],"attachment_only")
+            row["zotero_attachment_key"]="ATTACH01"
+            manifest.write_text(json.dumps([row]),encoding="utf-8")
+            payload=build_zotero_mcp_handoff(manifest)
+            self.assertEqual(payload["actions"][0]["kind"],"reuse_existing")
+            self.assertIsNone(payload["actions"][0]["tool"])
+
+    def test_late_connector_attachment_is_compared_before_a_new_write(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path=Path(tmp)/"fixture.pdf";path.write_bytes(b"synthetic byte identity fixture")
+            class ReadOnlyLibrary:
+                content=path.read_bytes()
+                def children(self,key):
+                    return [{"key":"ATTACH01","data":{"contentType":"application/pdf","linkMode":"imported_file"}}]
+                def file(self,key): return self.content
+            backend=object.__new__(PyzoteroSyncBackend);backend.zot=ReadOnlyLibrary()
+            self.assertEqual(backend.attach_linked_file("PARENT01",path,title="fixture",tags=[]),"ATTACH01")
+            backend.zot.content=b"different version"
+            with self.assertRaisesRegex(RuntimeError,"bytes differ"):
+                backend.attach_linked_file("PARENT01",path,title="fixture",tags=[])
+
     def test_doi_to_url_normalizes_plain_doi(self) -> None:
         self.assertEqual(doi_to_url("10.0000/example"), "https://doi.org/10.0000/example")
         self.assertEqual(doi_to_url("https://doi.org/10.0000/example"), "https://doi.org/10.0000/example")

@@ -268,6 +268,20 @@ def sync_single_candidate(
         ledger.save()
         return True, "reused_existing", rec
 
+    # A prior Connector save can have metadata without the matching PDF, or
+    # the live DB snapshot may not yet show a newly saved attachment. Never
+    # create another parent merely because this byte-level check did not pass.
+    connector_parent = record.get("zotero_item_key") or record.get("zotero_parent_key")
+    if connector_parent:
+        rec = {"item_key": item_key, "title": title, "doi": norm_doi or None,
+               "original_pdf_path": str(pdf_p), "file_bytes": file_bytes, "sha256": file_sha,
+               "zotero_parent_key": connector_parent, "ingest_status": "PENDING_EXISTING_PARENT_ATTACHMENT",
+               "download_status": "downloaded", "provenance": provenance,
+               "last_error": "Existing Zotero parent must be re-read/attached via normal sync; refusing duplicate parent import"}
+        ledger.upsert_record(rec)
+        ledger.save()
+        return False, "existing_parent_attachment_required", rec
+
     # 3. Not in Zotero: Check if metadata is sufficient
     if not authors and not norm_doi and not year:
         rec = {

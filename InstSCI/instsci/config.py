@@ -32,6 +32,7 @@ class Config:
     carsi_idp_name: str = ""  # University name for CARSI WAYF (e.g. "Example University")
     institution_name_zh: str = ""  # User's subscription institution name in Chinese/local form
     institution_name_en: str = ""  # User's subscription institution name in English form
+    zotero_connector_extension: str = ""  # External unpacked official browser extension; never bundled
     institution_idp_host_suffixes: tuple[str, ...] = ()  # Institution IdP hosts treated as user-login pages
     institution_session_domains: tuple[str, ...] = ()  # Extra session domains for `session-doctor`
     carsi_cookie_dir: str = ""  # Per-publisher CARSI cookies

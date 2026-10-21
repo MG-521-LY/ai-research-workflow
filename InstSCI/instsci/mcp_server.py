@@ -503,8 +503,9 @@ async def configure_institution(
 async def fetch_paper(identifier: str, format: str = "markdown") -> str:
     """Fetch an academic paper's full text by DOI or URL.
 
-    Uses Open Access sources (Unpaywall, arXiv) first, then falls back
-    to institutional access gateways for paywalled content. Results are cached locally.
+    Checks the actual Zotero Connector route first. If unavailable or missing
+    the PDF, falls back to existing OA/publisher/institutional routes. Unresolved
+    saves do not trigger duplicate writes. Results are cached locally.
 
     Args:
         identifier: DOI (e.g. "10.1038/nphys1509") or article URL.

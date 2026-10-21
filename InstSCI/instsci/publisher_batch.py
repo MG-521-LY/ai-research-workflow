@@ -5,6 +5,7 @@ from __future__ import annotations
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import csv
 import inspect
+import os
 import json
 import re
 import shutil
@@ -67,6 +68,7 @@ STANDARD_STATUSES = {
     "unsupported_publisher",
 }
 RESULT_EVIDENCE_VALUES = {
+    "local_verified_reuse",
     "oa_direct",
     "publisher_open_pdf",
     "browser_verified",
@@ -97,6 +99,9 @@ class DownloadResult:
     text_length: int = 0
     size_bytes: int = 0
     verified_match: bool = False
+    zotero_item_key: str = ""
+    zotero_attachment_key: str = ""
+    connector_evidence: str = ""
     diagnostic_path: str = ""
     events: list[dict[str, str]] = field(default_factory=list)
 
@@ -456,11 +461,14 @@ class PublisherBatchDownloader:
 
         profile_path = Path(profile_dir) if profile_dir else Path(self.config.chrome_profile_dir)
         profile_path.mkdir(parents=True, exist_ok=True)
+        from .connector_first import extension_directory
+        extension = extension_directory(self.config.zotero_connector_extension)
         return launch_persistent_context(
             user_data_dir=str(profile_path),
             headless=False,
             humanize=True,
             accept_downloads=True,
+            extension_paths=[str(extension)] if extension else None,
             args=["--no-proxy-server", "--disable-features=CrossOriginOpenerPolicy"],
         )
 
@@ -617,6 +625,29 @@ class PublisherBatchDownloader:
             result.title = self._title(page)
             result.state = "article_loaded"
             self._hold_after_login(page, result)
+            if os.environ.get("INSTSCI_CONNECTOR_FALLBACK") != "1":
+                from .connector_first import try_connector, save_receipt
+                request = {"doi": record.doi, "title": record.title, "url": result.article_url}
+                connector_dir = run_dir / "connector_first" / safe_name(record.doi)
+                connector = try_connector(request, connector_dir, config=self.config, context=context, page=page)
+                save_receipt(connector_dir, request, connector)
+                result.zotero_item_key = connector.get("zotero_item_key", "")
+                self._event(result, "zotero_connector_first", connector["status"])
+                if connector["status"] == "verified_pdf":
+                    row = connector["row"]
+                    result.pdf_path, result.title = row["pdf_path"], row["title"]
+                    result.size_bytes = row["size_bytes"]
+                    result.zotero_item_key = row.get("zotero_item_key", "")
+                    result.zotero_attachment_key = row.get("zotero_attachment_key", "")
+                    result.connector_evidence = row["result_evidence"]
+                    result.text_length = len(pdf_extractor.extract_text(result.pdf_path))
+                    result.status, result.state, result.reason = "success", "zotero_connector_verified", ""
+                    result.verified_match = True
+                    return result
+                if not connector.get("fallback_allowed"):
+                    result.reason = connector["status"]
+                    result.state = connector["status"]
+                    return result
             pdf_bytes, pdf_url = self._capture_pdf(page, record.doi, result)
             if not pdf_bytes:
                 if self._looks_logged_out(page):
@@ -3222,6 +3253,8 @@ class PublisherBatchDownloader:
                 "size_bytes": 0,
                 "text_length": 0,
                 "verified_match": False,
+                "zotero_item_key": getattr(any_result, "zotero_item_key", ""),
+                "zotero_attachment_key": getattr(any_result, "zotero_attachment_key", ""),
             }
             if result and result.pdf_path:
                 src = Path(result.pdf_path)
@@ -3243,7 +3276,7 @@ class PublisherBatchDownloader:
                             "status": file_status,
                             "file_status": file_status,
                             "standard_status": pdf_standard_status,
-                            "result_evidence": "browser_verified" if result.diagnostic_path or result.events else "not_verified",
+                            "result_evidence": result.connector_evidence or ("browser_verified" if result.diagnostic_path or result.events else "not_verified"),
                             "reason": result.reason,
                             "pdf_path": str(dst),
                             "pdf_url": result.pdf_url,

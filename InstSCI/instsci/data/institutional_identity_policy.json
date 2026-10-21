@@ -3,6 +3,18 @@
   "last_review": "2026-06-07",
   "purpose": "Reusable policy for choosing institutional identity routes before browser-backed publisher PDF downloads.",
   "default_mode": "auto",
+  "download_strategy": {
+    "default": "zotero_connector_first",
+    "all_sources": true,
+    "discovery_apis_unchanged": true,
+    "entry_command": "instsci acquire",
+    "actual_extension_required": true,
+    "success_requires_parent_and_pdf_byte_readback": true,
+    "fallback_on": ["connector_unavailable", "translator_unavailable", "explicit_save_failure", "metadata_only"],
+    "pause_on": ["save_pending", "uncertain_readback", "ambiguous_parent", "identity_conflict", "quota_blocked"],
+    "metadata_only_fallback": "attach_to_existing_parent",
+    "existing_local_and_zotero_pdfs": "verify_and_reuse"
+  },
   "official_library_entry": {
     "enabled_when": "user selects their own official library portal route",
     "command": "instsci library-papers",

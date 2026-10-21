@@ -69,11 +69,14 @@ except ImportError:
 from pipeline_runner import LedgerManager, verify_pdf_fulltext, check_connector_ping
 
 
-def run_topic_library_cmd(args: list[str]) -> tuple[int, str, str]:
+def run_topic_library_cmd(args: list[str], *, connector_read_only: bool = False) -> tuple[int, str, str]:
     """Invokes InstSci topic_library.py CLI."""
     py_exe = sys.executable
     cmd = [py_exe, str(TOPIC_SCRIPT)] + args
-    proc = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8")
+    child_env = dict(os.environ)
+    if connector_read_only:
+        child_env["INSTSCI_CONNECTOR_READ_ONLY"] = "1"
+    proc = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", env=child_env)
     return proc.returncode, proc.stdout, proc.stderr
 
 
@@ -456,7 +459,8 @@ def cmd_run(
         # Step 5: Acquire planned batches
         acquire_errors = []
         for b in active_planned:
-            rc, out, err = run_topic_library_cmd(["acquire", "--task", str(task_p), "--batch", b["id"]])
+            rc, out, err = run_topic_library_cmd(["acquire", "--task", str(task_p), "--batch", b["id"]],
+                                                  connector_read_only=not commit)
             if rc != 0:
                 acquire_errors.append({"batch_id": b["id"], "error": err.strip()})
 

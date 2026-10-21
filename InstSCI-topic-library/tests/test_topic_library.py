@@ -88,12 +88,12 @@ class WorkflowTests(unittest.TestCase):
         self.cmd("plan")
         self.assertIsNone(self.cmd("plan")["batch"])
 
-    def test_doi_input_is_read_by_actual_upstream_parser(self):
+    def test_doi_input_uses_connector_first_with_exact_metadata(self):
         self.candidates(2)
         b = self.cmd("plan", "--limit", 2)["batch"]
-        from instsci.cli import _read_paper_records
-        actual = _read_paper_records(Path(b["argv"][4]))
-        self.assertEqual([p.doi for p in actual], ["10.1007/fixture-0", "10.1007/fixture-1"])
+        actual = json.loads(Path(b["argv"][4]).read_text(encoding="utf-8"))
+        self.assertEqual([p['doi'] for p in actual], ["10.1007/fixture-0", "10.1007/fixture-1"])
+        self.assertEqual(b['argv'][3], 'acquire')
         metadata = json.loads(Path(b["argv"][4]).with_name("selected_metadata.json").read_text())
         self.assertEqual(metadata[0]["title"], "Synthetic paper 0")
 
@@ -239,7 +239,8 @@ class WorkflowTests(unittest.TestCase):
         records = json.loads(Path(b["argv"][4]).read_text(encoding="utf-8"))
         self.assertEqual(b["route"], "cnki")
         self.assertEqual(records[0]["first_author"], "Author 0")
-        self.assertIn("--navigation-mode", b["argv"])
+        self.assertEqual(b['argv'][3], 'acquire')
+        self.assertEqual(b['argv'][b['argv'].index('--fallback')+1], 'cnki')
         path = self.complete(b, evidence="browser_verified")
         self.assertEqual(self.cmd("status")["summary"]["verified_downloaded"], 1)
         rows = json.loads(path.read_text())
@@ -275,8 +276,9 @@ class WorkflowTests(unittest.TestCase):
         self.cmd("review", "--input", self.input("elsevier-review.json", [{"id": pid, "decision": "include", "relevance": 98, "evidence": "abstract", "reason": "Fixture"}]))
         batch = self.cmd("plan", "--limit", 10)["batch"]
         self.assertEqual(batch["ids"], ids)
-        from instsci.cli import _read_paper_records, _resolve_papers_profile
-        self.assertIsNotNone(_resolve_papers_profile(_read_paper_records(Path(batch["input_file"])), "auto"))
+        from instsci.publisher_profiles import infer_publisher_profile
+        requests = json.loads(Path(batch['input_file']).read_text(encoding='utf-8'))
+        self.assertIsNotNone(infer_publisher_profile(requests[0]['doi']))
 
     def test_lost_task_state_cannot_be_silently_reinitialized(self):
         (self.root / "topic.json").unlink()

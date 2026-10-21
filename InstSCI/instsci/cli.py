@@ -63,6 +63,34 @@ app.add_typer(chinese_quota_app, name="chinese-quota")
 console = Console()
 
 
+@app.command("acquire")
+def acquire_connector_first(
+    records: Path = typer.Argument(help="JSON list of observed title/DOI/URL/portal records"),
+    output: Path = typer.Option(..., "--output", help="Separate acquisition run directory"),
+    fallback: str = typer.Option("auto", "--fallback", help="auto, doi, url, cnki, wanfang, or library"),
+    institution: str = typer.Option("", "--institution"),
+    library_config: Optional[Path] = typer.Option(None, "--library-config"),
+    connector_extension: str = typer.Option("", "--connector-extension", help="External official unpacked Zotero Connector directory"),
+    resume: bool = typer.Option(False, "--resume"),
+):
+    """All sources: real Zotero Connector first, legacy download only on verified fallback."""
+    from .acquisition import acquire
+    if fallback not in {"auto", "doi", "url", "cnki", "wanfang", "library"}:
+        raise typer.BadParameter("Unknown fallback route")
+    try:
+        items = json.loads(records.read_text(encoding="utf-8-sig"))
+        result = acquire(items, output, fallback=fallback, institution=institution,
+                         library_config=library_config, connector_extension=connector_extension, resume=resume)
+    except (ValueError, OSError, ImportError) as exc:
+        console.print_json(data={"status": "acquisition_not_completed", "error_type": type(exc).__name__})
+        raise typer.Exit(2) from None
+    console.print_json(data={"strategy": result["strategy"], "success": result.get("success", 0),
+                             "complete": result.get("complete", False), "pause_reason": result.get("pause_reason"),
+                             "manifest": str(output / "complete" / "manifest.json")})
+    if not result.get("complete"):
+        raise typer.Exit(2)
+
+
 @app.command("library-papers")
 def library_papers(
     library_config: Path = typer.Option(..., "--library-config", help="Your institution's official library URL JSON"),
@@ -110,6 +138,7 @@ STANDARD_STATUSES = {
 }
 FILE_STATUSES = {"success", "unverified", "missing"}
 RESULT_EVIDENCE_VALUES = {
+    "local_verified_reuse",
     "oa_direct",
     "publisher_open_pdf",
     "browser_verified",
@@ -3279,7 +3308,7 @@ def papers(
     watch_interval: float = typer.Option(4.0, "--watch-interval", min=2.0, help="Seconds between runtime browser watch checks."),
     pause_on_blocker: bool = typer.Option(True, "--pause-on-blocker/--no-pause-on-blocker", help="Pause visible browser workflow on CAPTCHA/WAF before continuing PDF capture."),
 ):
-    """OA-first papers workflow; browser workflow is used only for remaining closed-access PDFs."""
+    """Legacy source downloader: Connector first, then OA and visible publisher fallbacks. Prefer acquire for one-attempt coordination."""
     from .publisher_batch import PublisherBatchDownloader
 
     if not file.exists():

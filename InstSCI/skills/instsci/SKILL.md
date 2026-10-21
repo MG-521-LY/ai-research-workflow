@@ -7,6 +7,13 @@ description: Use when working with the InstSci project, publisher PDF retrieval,
 
 ## Core Rule
 
+New retrieval from all sources uses actual Zotero Connector first. Prefer
+`instsci acquire <records.json> --output <run>`, verify actual parent/attachment
+readback, and fall back to existing source downloaders only on explicit failure,
+unavailability or metadata-only results. Preserve parent keys; never repeat an
+uncertain save or create a duplicate parent. Follow `docs/CONNECTOR_FIRST.md` in
+the parent workflow. Search/discovery APIs remain metadata sources.
+
 Use this self-contained skill as the project entry point for normal InstSci CLI work. A source checkout is required only for development tasks.
 
 ## Startup

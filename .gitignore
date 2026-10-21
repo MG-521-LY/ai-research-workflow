@@ -14,6 +14,8 @@
 **/private-evidence/
 **/library-profiles/
 **/.library_run.lock
+**/.connector_acquire.lock
+**/zotero-connector-extension/
 # Generated state and downloaded content
 .venv/
 venv/

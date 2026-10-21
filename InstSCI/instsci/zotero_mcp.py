@@ -174,7 +174,12 @@ def build_zotero_mcp_handoff(
             "file_status": file_status,
             "result_evidence": row.get("result_evidence") or "",
         }
-        if doi:
+        if zotero_item_key and row.get("zotero_attachment_key"):
+            actions.append({"index": index, "doi": doi, "zotero_item_key": zotero_item_key,
+                            "zotero_attachment_key": row["zotero_attachment_key"],
+                            "title": row.get("title") or "", "kind": "reuse_existing",
+                            "tool": None, "params": {}, "source": source})
+        elif doi and not zotero_item_key:
             actions.append(
                 {
                     "index": index,
@@ -215,6 +220,7 @@ def build_zotero_mcp_handoff(
             "actions": len(actions),
             "metadata_imports": sum(1 for action in actions if action["kind"] == "metadata_import"),
             "attachment_only": sum(1 for action in actions if action["kind"] == "attachment_only"),
+            "reuse_existing": sum(1 for action in actions if action["kind"] == "reuse_existing"),
             "skipped": len(skipped),
         },
     }
@@ -393,6 +399,32 @@ class PyzoteroSyncBackend:
         title: str,
         tags: list[str],
     ) -> str:
+        # A Connector may finish its PDF after the downloader's metadata-only
+        # result. Re-read before attaching; never assume that result is current.
+        import hashlib
+        expected_hash = hashlib.sha256(pdf_path.read_bytes()).hexdigest()
+        existing_pdfs = []
+        for child in self.zot.children(item_key):
+            data = child.get("data", child)
+            if data.get("contentType") != "application/pdf":
+                continue
+            key = child.get("key") or data.get("key")
+            if not key:
+                raise RuntimeError("Existing PDF attachment has no key; inspect before attaching")
+            existing_pdfs.append(key)
+            if data.get("linkMode") == "linked_file":
+                existing_path = Path(data.get("path", ""))
+                if not existing_path.is_file():
+                    raise RuntimeError("Existing linked PDF is unavailable; inspect before attaching")
+                raw = existing_path.read_bytes()
+            else:
+                raw = self.zot.file(key)
+            if not isinstance(raw, bytes):
+                raise RuntimeError("Existing PDF bytes unavailable; inspect before attaching")
+            if hashlib.sha256(raw).hexdigest() == expected_hash:
+                return key
+        if existing_pdfs:
+            raise RuntimeError("Existing PDF bytes differ; preserve versions and inspect before attaching")
         attachment = self.zot.item_template("attachment", linkmode="linked_file")
         attachment["parentItem"] = item_key
         attachment["title"] = title or pdf_path.name
@@ -484,7 +516,7 @@ def execute_zotero_sync(
     )
     manifest_path = Path(payload["manifest"])
     _, rows = load_manifest_rows(manifest_path)
-    active_backend = backend if backend is not None else (None if dry_run else PyzoteroSyncBackend())
+    active_backend = backend  # A verified Connector item+attachment needs no new writer/authentication.
     results: list[dict[str, Any]] = []
 
     for action in payload.get("actions", []):
@@ -516,7 +548,8 @@ def execute_zotero_sync(
             results.append(result)
             continue
         try:
-            assert active_backend is not None
+            if active_backend is None and not (row.get("zotero_item_key") and row.get("zotero_attachment_key")):
+                active_backend = PyzoteroSyncBackend()
             item_key = str(
                 row.get("zotero_item_key")
                 or active_backend.add_by_url(
