@@ -27,7 +27,11 @@
 
 保存任务名、时间、后端与模型标识、退出码、去敏后的错误、输入清单摘要、阶段状态和缺口。不要保存Authorization、Cookie、完整密钥、机构口令或包含这些值的进程命令。
 
-## 历史Zotero专项脚本的限制
+## 学校图书馆入口
+
+`library-papers` 的 `browser_start_failed` 表示浏览器启动失败，应核运行环境与本机权限，不能让用户去找一个并未打开的登录页；`library_navigation_failed` 是首页/导航失败，不是学校拒绝订阅；`capture_timeout_not_login_verdict` 是尚未接收完整目标。已在同一个可见浏览器里下载但仍未收录时，检查 `candidates/`、首页面题名和可见 DOI、原生下载事件及截图；不要复制 cookie 或重放带 token 的 URL。详情见[学校图书馆路线](LIBRARY_PORTAL.md)。
+
+## 历史Zotero专项脚本说明
 
 `goal20/corpus/proposal_story5/zotero_sync_round08.py` 是针对原项目某批文献的工具，保留作源码参考，不是仓库新部署的通用上传入口。它曾将正常本地302文件位置视为回验失败；相关上传不能据这个客户端标志自动重试。使用通用T004入口，专项逻辑若要复用，应先独立核目标计划、授权与回读实现。
 

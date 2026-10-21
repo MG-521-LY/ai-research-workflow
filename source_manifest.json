@@ -34,8 +34,9 @@
     },
     {
       "path": ".gitignore",
-      "sha256": "fed8df91322066fd57028072035b6dd72b77b60ac1c70f804b92eb08463bef9d",
-      "bytes": 513
+      "sha256": "11c432a968713b982e679c1b599eb5ae671ac3beefbcceb7655dfbde1d835752",
+      "bytes": 576,
+      "original_snapshot_sha256": "fed8df91322066fd57028072035b6dd72b77b60ac1c70f804b92eb08463bef9d"
     },
     {
       "path": "CONTRIBUTING.md",
@@ -87,8 +88,8 @@
     },
     {
       "path": "InstSCI-topic-library/skills/instsci-topic-library/SKILL.md",
-      "sha256": "bc5228969cc99bc1fd240dd76a3f7d4bdb8be4f4e2324157b9dcaafe494f6db7",
-      "bytes": 5670,
+      "sha256": "1265379e35b836d3c41f0dc208771af7be123607a5aa6cdd5869c2880e6a02c3",
+      "bytes": 6198,
       "original_snapshot_sha256": "bc5228969cc99bc1fd240dd76a3f7d4bdb8be4f4e2324157b9dcaafe494f6db7"
     },
     {
@@ -153,8 +154,8 @@
     },
     {
       "path": "InstSCI/AGENTS.md",
-      "sha256": "52b6372e3c21ec89ea3d00f4ae1e7102bc73859d134eb359329ce1041dcd84ad",
-      "bytes": 7264,
+      "sha256": "250df2af08075114ea9b0b7b4a5597a86d294d8303efe11301c98ab0be003773",
+      "bytes": 7756,
       "original_snapshot_sha256": "52b6372e3c21ec89ea3d00f4ae1e7102bc73859d134eb359329ce1041dcd84ad"
     },
     {
@@ -261,8 +262,8 @@
     },
     {
       "path": "InstSCI/instsci/cli.py",
-      "sha256": "be7e116a9fbb892a57fb8bb67b85a82adb65998e0e4341a6c20d18c18420022f",
-      "bytes": 214957,
+      "sha256": "02745ca252939f2d8edf109d73f8efd558eeb07b89ef6d6c6c7d358784077ec4",
+      "bytes": 216718,
       "original_snapshot_sha256": "be7e116a9fbb892a57fb8bb67b85a82adb65998e0e4341a6c20d18c18420022f"
     },
     {
@@ -285,8 +286,8 @@
     },
     {
       "path": "InstSCI/instsci/data/institutional_identity_policy.json",
-      "sha256": "f26efaa822c0931d55993fe7a655d6bcec2ef21849a9d32f56543855b11ee656",
-      "bytes": 7043,
+      "sha256": "391848fc7bddfdb22b928524b4e09feb123c20587c2a6f911fb7e9a86acc5915",
+      "bytes": 7649,
       "original_snapshot_sha256": "72bc9a0086520ada67a30e809e7b99c4b4c657ee84c094b274d873e04d81fa42"
     },
     {
@@ -414,6 +415,11 @@
       "sha256": "e0b1c8a12bfc5f8fc15facc2ae0a49975470417db18e7230de25bb5672695899",
       "bytes": 6108,
       "original_snapshot_sha256": "e0b1c8a12bfc5f8fc15facc2ae0a49975470417db18e7230de25bb5672695899"
+    },
+    {
+      "path": "InstSCI/instsci/library_portal.py",
+      "sha256": "53156fbd9698ea96dec7628a5bbdd1bd5fe9928b34d95e5e3660e97cd9ba1489",
+      "bytes": 16785
     },
     {
       "path": "InstSCI/instsci/mcp_server.py",
@@ -783,8 +789,8 @@
     },
     {
       "path": "InstSCI/skills/instsci/SKILL.md",
-      "sha256": "1d082ee921086175ede0dcdd8a023728b7783d940932e8027c991d5297c3c080",
-      "bytes": 23328,
+      "sha256": "387b39bfb45759b4d8836ba8bb4c2deebb39a4f4c0eee116349e355cfa1ca006",
+      "bytes": 24325,
       "original_snapshot_sha256": "1d082ee921086175ede0dcdd8a023728b7783d940932e8027c991d5297c3c080"
     },
     {
@@ -859,8 +865,8 @@
     },
     {
       "path": "README.md",
-      "sha256": "37e2d9b2a8e56b4ac049d6e2b22470adea8cbdaeab9fcfbc5f1084f5946689f1",
-      "bytes": 5763,
+      "sha256": "2ade32fdee6b420cbbca251342cdfc8d473a797266e67bd565bb2175d0e00422",
+      "bytes": 6007,
       "original_snapshot_sha256": "b0da1a7039b1cd233e94a91d2304a038a1e46e934e7e969e4b8b945afc7240c2"
     },
     {
@@ -1217,15 +1223,20 @@
     },
     {
       "path": "docs/ARCHITECTURE.md",
-      "sha256": "6a756d12d27444798fdc450884fb4cee5a2b17d9e7715400b684f2a3408e2b4e",
-      "bytes": 4285,
+      "sha256": "c764d9602f762b4d22a71664c25b90308f0a21a684810a99d685dbc01adeee46",
+      "bytes": 4497,
       "original_snapshot_sha256": "4414bf6d2fb39b28579965a2fc786c7b446ddeec1ed718a644f37bc4a98d5bd3"
     },
     {
       "path": "docs/INSTALLATION.md",
-      "sha256": "4585b62e4dee2980de3c30d9d142fae93482bf9831db8ed4bcd622067708f50f",
-      "bytes": 5746,
+      "sha256": "f30fc1c4e1e764c5f74671119e9fecf0043777e82ecd94cc221548550f01e482",
+      "bytes": 6018,
       "original_snapshot_sha256": "bb3f62fe2305391648aa7f1eea0bed89f0f69969a4352a8c78d3304954cd3f6c"
+    },
+    {
+      "path": "docs/LIBRARY_PORTAL.md",
+      "sha256": "c63a8c2fc2ae37eb46ea02dd72e1cfabaebad2c291eb8affb52fa5bcdc17140e",
+      "bytes": 8626
     },
     {
       "path": "docs/LOCAL_QUICKSTART.md",
@@ -1234,20 +1245,20 @@
     },
     {
       "path": "docs/TROUBLESHOOTING.md",
-      "sha256": "359d09f0147f586f388c3ad66be797958b26962d4b4ab05668e366b814ccb7e6",
-      "bytes": 3891,
+      "sha256": "357c3f3589b489971b0761e0ecf91c01c79c640821dc5e176d3d6ab39148fab0",
+      "bytes": 4473,
       "original_snapshot_sha256": "288d0b10ddc8996ed464e1a38894017cf69fef1a101d2e1400dc171180ae4834"
     },
     {
       "path": "docs/TUTORIAL.md",
-      "sha256": "d82052cd359eb3077bce926ed981d3ced8b49cd8f6b5b7a1c3af78e857d9b13a",
-      "bytes": 10594,
+      "sha256": "29b248ace81b6c013febcc0421b542f708e05e57fe83dfa6e4d4657bc6e34084",
+      "bytes": 11207,
       "original_snapshot_sha256": "eba314617ef28f3f1d5e42a5f18be949ccbf71b5daf68967244df2a98d4da1c4"
     },
     {
       "path": "docs/VERIFICATION.md",
-      "sha256": "20d7e6d6003af7ec5c2a028b255c3285e92ab59ad3bd1fc0d759df293211c913",
-      "bytes": 2694,
+      "sha256": "eb95d9cc27a4da4291271f7325fc071e8e100ccbe1c1e7f4332fa13f1244b3ee",
+      "bytes": 3339,
       "original_snapshot_sha256": "a62a8d95caf84ffa2091aba50ff60698ef628626d7856de1c76f4604789308ee"
     },
     {
@@ -1259,6 +1270,16 @@
       "path": "docs/archive/16_使用入口与项目交付.md",
       "sha256": "68cd39af7e2c3554ebec329c5cbbb8776b11151355f69fa62be3ab2b736352dd",
       "bytes": 2954
+    },
+    {
+      "path": "examples/library_papers.json",
+      "sha256": "18cea978e05853f6ddb7f84fb9bcd3ded8d7b02845cf9e0fc9b8858d301a071c",
+      "bytes": 153
+    },
+    {
+      "path": "examples/library_portal.ustc.json",
+      "sha256": "6fa0e92fe454c3e8d0c922aa08bce89d991136497be5b561df0dc4a023bd6b1f",
+      "bytes": 179
     },
     {
       "path": "goal20/corpus/proposal_story5/zotero_sync_round08.py",
@@ -1296,6 +1317,11 @@
       "original_snapshot_sha256": "73a6c3d452b7b8a46033071cf9bbc319539a3d309f400aaabd4f7a8390189517"
     },
     {
+      "path": "tests/test_library_portal.py",
+      "sha256": "4434cb1fd6a1c489d6082b038246de4320b9276598beef730227800a67b02f7a",
+      "bytes": 7370
+    },
+    {
       "path": "tests/test_release_files.py",
       "sha256": "c714ee76728f034198a51daba33895e9f789f0c5d6f872372ff505449f8d18fb",
       "bytes": 1871
@@ -1317,7 +1343,7 @@
     "Removed dated DeepSeek successor creation helpers from reusable export only",
     "Exported text normalized to UTF-8/LF for reproducible Git file hashes; runtime state and data remain excluded"
   ],
-  "file_count_excluding_manifest": 218,
+  "file_count_excluding_manifest": 223,
   "license": "MIT; original component MIT notices retained",
-  "last_updated_at": "2026-10-20T11:01:26.250938+00:00"
+  "last_updated_at": "2026-10-21T07:08:33.391100+00:00"
 }

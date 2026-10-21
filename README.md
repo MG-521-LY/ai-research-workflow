@@ -12,6 +12,7 @@
 - 第一次使用，无需密钥：[本地快速开始](docs/LOCAL_QUICKSTART.md)
 - 配置获取、模型与文库：[安装与配置](docs/INSTALLATION.md)
 - 从一批论文跑到研究报告：[完整使用教程](docs/TUTORIAL.md)
+- 从自己的学校图书馆进入数据库：[学校图书馆下载路线](docs/LIBRARY_PORTAL.md)
 - 理解模块和数据流：[架构与目录](docs/ARCHITECTURE.md)
 - 网络失败、拒答、重复入库、断点续跑：[故障与恢复](docs/TROUBLESHOOTING.md)
 - 本次发布实际检查了什么：[验证范围](docs/VERIFICATION.md)
@@ -22,6 +23,7 @@
 | 环节 | 作用 | 主要入口 |
 | --- | --- | --- |
 | 检索与获取 | 主题检索、摘要筛选、已有权限下的全文获取 | `InstSCI/`、`InstSCI-topic-library/` |
+| 学校图书馆获取 | 本校官网/数据库导航、人工学校登录、同会话 PDF 下载接收与核验 | `instsci library-papers` |
 | T001 文献入库 | 标准化导入材料、记录父条目与附件映射 | `deliveries/T001_zotero_ingest/` |
 | T002 论文分析 | PDF 解析、方法卡、跨论文比较与引用记录 | `deliveries/T002_literature_analysis/` |
 | T003 PaperQA 桥接 | 语料准备、稀疏检索、引用定位与离线检查 | `deliveries/T003_paperqa_bridge/` |

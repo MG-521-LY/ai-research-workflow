@@ -13,6 +13,7 @@ Use this workflow whenever a user asks to download PDFs, test publisher access, 
    - Read `instsci/data/institutional_identity_policy.json`, or run `instsci identity-policy`.
    - If `--institution`, `config.carsi_idp_name`, `config.institution_name_en`, `config.institution_name_zh`, and `config.school` are all empty, ask for the user's own subscription institution.
 3. Choose the least surprising route.
+   - If the user explicitly chooses the official university library route, use `instsci library-papers` with their verified public library homepage and optional database navigation URL. Keep database selection, login and downloads in the same live visible browser; user/host agent navigates and the human handles authentication. Do not rewrite this choice to a bare publisher URL or infer entitlement from opening the homepage. See `docs/LIBRARY_PORTAL.md` in the parent workflow repository.
    - Prefer publisher broker / Shibboleth / OpenAthens / CARSI institution login when supported.
    - Use WebVPN only when the configured institution has a WebVPN gateway and that publisher path is browser-verified through the gateway.
    - If WebVPN fails, try the publisher article-page institutional login flow before marking the publisher failed.

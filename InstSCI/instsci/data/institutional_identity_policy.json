@@ -3,6 +3,18 @@
   "last_review": "2026-06-07",
   "purpose": "Reusable policy for choosing institutional identity routes before browser-backed publisher PDF downloads.",
   "default_mode": "auto",
+  "official_library_entry": {
+    "enabled_when": "user selects their own official library portal route",
+    "command": "instsci library-papers",
+    "configuration": ["institution", "library_homepage", "database_directory (optional)"],
+    "navigation_operator": "user_or_host_agent_in_same_visible_cloakbrowser",
+    "authentication_operator": "human_only",
+    "download_capture": "native_browser_download",
+    "automatic_database_navigation": false,
+    "entitlement_from_configuration": false,
+    "route_chain_requires_visual_review": true,
+    "no_global_institution_or_webvpn_default": true
+  },
   "default_identity": "publisher_broker",
   "preferred_off_campus_access": "shibboleth_or_openathens",
   "subscription_institution": {

@@ -63,6 +63,34 @@ app.add_typer(chinese_quota_app, name="chinese-quota")
 console = Console()
 
 
+@app.command("library-papers")
+def library_papers(
+    library_config: Path = typer.Option(..., "--library-config", help="Your institution's official library URL JSON"),
+    records: Path = typer.Option(..., "--records", help="JSON list with exact title and DOI"),
+    output: Path = typer.Option(..., "--output", help="Separate private run directory"),
+    plan_only: bool = typer.Option(False, "--plan-only", help="Offline plan; no browser/login/download"),
+    resume: bool = typer.Option(False, "--resume", help="Verify saved bytes and resume the same run"),
+    wait_seconds: int = typer.Option(900, "--wait-seconds", min=1, help="Checkpoint after this wait; browser stays open by default"),
+    close_on_timeout: bool = typer.Option(False, "--close-on-timeout", help="Explicitly close the browser at timeout instead of waiting"),
+):
+    """Official library -> database -> manual SSO -> native PDF capture/verification.
+
+    Database navigation is performed by the user or host agent in the same
+    visible CloakBrowser. No universal automatic database navigation is claimed.
+    """
+    from .library_portal import library_main
+    try:
+        result = library_main(config=library_config, records=records, output=output,
+                              plan_only=plan_only, resume=resume,
+                              wait_seconds=wait_seconds, close_on_timeout=close_on_timeout)
+    except (ValueError, OSError, ImportError, json.JSONDecodeError) as exc:
+        console.print_json(data={"status": "invalid_or_unavailable", "error_type": type(exc).__name__})
+        raise typer.Exit(2) from None
+    console.print_json(data=result)
+    if result["status"] not in {"planned_not_downloaded", "completed_pdf_identity_only"}:
+        raise typer.Exit(2)
+
+
 RUN_MODES = {"user", "diagnose", "dev"}
 DEFAULT_RUN_MODE = "user"
 STANDARD_STATUSES = {

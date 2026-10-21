@@ -33,6 +33,21 @@ Use MCP `search_papers`, `get_paper_metadata`, and `fetch_paper` for metadata, O
 
 If MCP output and repository files disagree, treat `AGENTS.md` plus `instsci/data/*.json` as the source of truth and mention the mismatch.
 
+## Optional official-library entry route
+
+When the user chooses their school's library website as the access route, use
+`instsci library-papers --library-config library.json --records records.json --output <private-run>`.
+First use `--plan-only`. Configure the user's exact institution and verified
+official `library_homepage`, optionally `database_directory`; never select a
+sample institution automatically. The same visible CloakBrowser opens these
+pages and captures native PDF downloads. User/host agent performs database and
+article navigation; the human alone handles credentials/SSO/verification. This
+is an assisted route, not universal automatic library navigation. Preserve
+gateway/session context rather than redirecting to a bare publisher/DOI URL.
+Review visual checkpoints; `route_chain_verified=false` is not a subscription
+verdict. A start error is not a waiting-login status. See the public workflow's
+`docs/LIBRARY_PORTAL.md` for resume, manifest handoff and exact boundaries.
+
 ## Evidence Standard
 
 Final publisher PDF verdicts require the visible built-in CloakBrowser workflow. `curl`, `requests`, DOI resolution, `publisher-doctor`, route construction, logs, DOM state, URLs, and cookie exports are HTTP preflight only.

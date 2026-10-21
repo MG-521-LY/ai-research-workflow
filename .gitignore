@@ -11,6 +11,9 @@
 **/auth_state*.json
 **/storage_state*.json
 **/config.local.*
+**/private-evidence/
+**/library-profiles/
+**/.library_run.lock
 # Generated state and downloaded content
 .venv/
 venv/
